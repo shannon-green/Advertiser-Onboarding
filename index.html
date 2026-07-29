@@ -622,14 +622,23 @@ function dedupeByOhqId(rows, keyField, fallbackField){
 function mergeOnboardingKeepingExisting(existingRows, newRows){
   // Prefer Channel OHQ ID as the identity key; fall back to OHQ ID for rows that don't have one yet
   // (e.g. New Onboardings), so re-uploading the same file doesn't create duplicate rows.
-  const existingIds = new Set(existingRows.map(identityKeyFor).filter(Boolean));
+  // Rows that already exist get their fields refreshed from the new upload (e.g. a corrected
+  // Channel value) rather than being left frozen with whatever they had the first time they appeared.
+  const indexByKey = new Map();
+  existingRows.forEach((r, idx) => {
+    const k = identityKeyFor(r);
+    if(k) indexByKey.set(k, idx);
+  });
   const merged = [...existingRows];
   newRows.forEach(r => {
     const key = identityKeyFor(r);
     if(!key){ merged.push(r); return; }
-    if(!existingIds.has(key)){
+    if(indexByKey.has(key)){
+      const idx = indexByKey.get(key);
+      merged[idx] = { ...merged[idx], ...r };
+    } else {
       merged.push(r);
-      existingIds.add(key);
+      indexByKey.set(key, merged.length - 1);
     }
   });
   return merged;
@@ -698,7 +707,7 @@ async function handleFile(kind, file){
       clientName: (normKey(r,"Client Name")||"").trim(),
       ohqId: (normKey(r,"OHQ ID")||"").trim(),
       channelClientId: (normKey(r,"Channel Client ID")||"").trim(),
-      channelName: (normKey(r,"Channel Name")||"").trim(),
+      channelName: (normKey(r,"Channel Name","Channel")||"").trim(),
       hitsYda: parseFloat(normKey(r,"Hits (YDA)")) || 0,
       hits7d: parseFloat(normKey(r,"Hits (7d)")) || 0,
       hhYda: parseFloat(normKey(r,"HH (YDA)")) || 0,
