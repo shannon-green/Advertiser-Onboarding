@@ -223,7 +223,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     </div>
     <div class="upload-slot" id="slotActive">
       <h4>ft.app Active Clients</h4>
-      <div class="filehint">.csv or .xlsx — Client Name, OHQ ID, Channel Client ID, Hits (YDA), Hits (7d), HH (YDA)</div>
+      <div class="filehint">.csv or .xlsx — Client Name, OHQ ID, Channel Client ID, Channel Name, Hits (YDA), Hits (7d), HH (YDA)</div>
       <button class="btn btn-primary" onclick="document.getElementById('fileActive').click()">Choose file</button>
       <input type="file" id="fileActive" accept=".csv,.xlsx,.xls">
       <div class="last" id="lastActive">No file uploaded yet</div>
@@ -680,7 +680,7 @@ async function handleFile(kind, file){
       channelOhqId: (normKey(r,"Channel OHQ ID")||"").trim(),
       coreChannelId: (normKey(r,"Core Channel ID")||"").trim(),
       website: (normKey(r,"Website")||"").trim(),
-      channel: (normKey(r,"Channel")||"").trim(),
+      channel: (normKey(r,"Channel","Channel Name","Reseller Channel","Partner Channel","Partner")||"").trim(),
     })).filter(r => r.accountName), 'channelOhqId', 'ohqId');
     onboardData = mergeOnboardingKeepingExisting(onboardData, parsedRows);
     await saveFile('onboard', onboardData, file.name);
@@ -698,6 +698,7 @@ async function handleFile(kind, file){
       clientName: (normKey(r,"Client Name")||"").trim(),
       ohqId: (normKey(r,"OHQ ID")||"").trim(),
       channelClientId: (normKey(r,"Channel Client ID")||"").trim(),
+      channelName: (normKey(r,"Channel Name")||"").trim(),
       hitsYda: parseFloat(normKey(r,"Hits (YDA)")) || 0,
       hits7d: parseFloat(normKey(r,"Hits (7d)")) || 0,
       hhYda: parseFloat(normKey(r,"HH (YDA)")) || 0,
