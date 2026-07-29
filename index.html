@@ -110,6 +110,15 @@ td.note-cell{ padding:6px 10px; }
 .assignee-input:focus{ outline:none; border-color:var(--accent); }
 .assignee-input.saved{ border-color: var(--success); }
 .assignee-input::placeholder{ color:var(--text-faint); }
+td.delete-cell{ padding:6px 10px; text-align:center; }
+.delete-row-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; padding:0; border-radius:6px;
+  background:transparent; border:1px solid var(--border); color:var(--text-faint);
+  cursor:pointer; transition: all .15s ease;
+}
+.delete-row-btn:hover{ border-color:var(--danger); color:var(--danger); background:var(--danger-dim); }
+.delete-row-btn svg{ width:14px; height:14px; }
 footer{ margin-top:30px; display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:var(--text-faint); font-family:var(--mono); flex-wrap:wrap; gap:10px;}
 /* Modal */
 .modal-overlay{ position:fixed; inset:0; background:rgba(6,9,16,0.75); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
@@ -228,7 +237,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, Channel ID, or URL…"></div>
   <div class="table-scroll">
     <table id="tableNew">
-      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyNew">Upload both files to see results.</div>
@@ -244,7 +253,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, Channel ID, or URL…"></div>
   <div class="table-scroll">
     <table id="tablePending">
-      <thead><tr><th>Account Name</th><th>Script</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyPending">Upload both files to see results.</div>
@@ -260,7 +269,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, Channel ID, or URL…"></div>
   <div class="table-scroll">
     <table id="tableInstalled">
-      <thead><tr><th>Account Name</th><th>Script</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>OHQ ID</th><th>Channel OHQ ID</th><th>Core Channel ID</th><th>Website</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyInstalled">Upload both files to see results.</div>
@@ -295,6 +304,18 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="modal-actions">
       <button class="btn" id="cancelClearBtn">Cancel</button>
       <button class="btn btn-danger-ghost" id="confirmClearBtn">Clear All Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete row confirm modal -->
+<div class="confirm-overlay" id="deleteRowOverlay">
+  <div class="modal">
+    <h3>Remove this account?</h3>
+    <p class="sub" id="deleteRowLabel">This removes it from the pipeline for everyone viewing this site. This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn" id="cancelDeleteRowBtn">Cancel</button>
+      <button class="btn btn-danger-ghost" id="confirmDeleteRowBtn">Remove</button>
     </div>
   </div>
 </div>
@@ -375,6 +396,8 @@ let noteSaveTimers = {};
 let assigneeSaveTimers = {};
 let editingNoteKeys = new Set();
 let lastOnboardUploadedAt = null;
+let lastOnboardFilename = null;
+let pendingDeleteKey = null;
 let lastActiveUploadedAt = null;
 
 function identityKeyFor(r){
@@ -402,6 +425,7 @@ async function loadStoredData(){
       if(parsed){
         onboardData = parsed.rows || [];
         lastOnboardUploadedAt = parsed.uploadedAt || null;
+        lastOnboardFilename = parsed.filename || null;
         updateLastLine('lastOnboard', parsed.filename, parsed.uploadedAt);
       }
     }
@@ -508,6 +532,21 @@ async function saveFile(kind, rows, filename){
   await storageSet(key, payload);
 }
 
+// Manually removes a row from the pipeline entirely (e.g. a client cancels during onboarding).
+// Since every bucket (New/Pending/Installed) is derived from onboardData, removing the underlying
+// onboarding record here removes it from whichever section it currently shows up in.
+async function deleteOnboardingRow(key){
+  if(!key) return;
+  onboardData = onboardData.filter(r => identityKeyFor(r) !== key);
+  const payload = JSON.stringify({
+    rows: onboardData,
+    filename: lastOnboardFilename || 'manual-edit',
+    uploadedAt: lastOnboardUploadedAt || new Date().toISOString()
+  });
+  await storageSet('reconcile:onboarding', payload);
+  render();
+}
+
 function normKey(row, ...names){
   for(const n of names){
     if(row[n] !== undefined) return row[n];
@@ -594,6 +633,7 @@ async function handleFile(kind, file){
     onboardData = mergeOnboardingKeepingExisting(onboardData, parsedRows);
     await saveFile('onboard', onboardData, file.name);
     lastOnboardUploadedAt = new Date().toISOString();
+    lastOnboardFilename = file.name;
     updateLastLine('lastOnboard', file.name, lastOnboardUploadedAt);
 
     const newlyAddedRows = parsedRows.filter(r => {
@@ -699,6 +739,7 @@ function renderSection(key, rows, hasHits){
         <td class="mono">${escapeHtml(r.coreChannelId)}</td>
         <td class="mono">${escapeHtml(r.website)}</td>
         ${hasHits ? `<td class="mono">${r.hitsYda}</td><td class="mono">${r.hits7d}</td><td class="mono">${r.hhYda}</td>` : ''}
+        <td class="delete-cell"><button type="button" class="delete-row-btn" data-deletekey="${escapeHtml(identityKeyFor(r))}" data-deletelabel="${escapeHtml(r.accountName)}" title="Remove this account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button></td>
       </tr>
     `;
     }).join('');
@@ -849,6 +890,31 @@ document.getElementById('confirmClearBtn').addEventListener('click', async ()=>{
   document.getElementById('lastActive').textContent = 'No file uploaded yet';
   confirmOverlay.classList.remove('show');
   render();
+});
+
+// ---------- Delete individual row (e.g. client cancels during onboarding) ----------
+const deleteRowOverlay = document.getElementById('deleteRowOverlay');
+const deleteRowLabel = document.getElementById('deleteRowLabel');
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest && e.target.closest('.delete-row-btn');
+  if(!btn) return;
+  pendingDeleteKey = btn.dataset.deletekey;
+  const label = btn.dataset.deletelabel || 'this account';
+  deleteRowLabel.textContent = `This removes "${label}" from the pipeline for everyone viewing this site. This can't be undone.`;
+  deleteRowOverlay.classList.add('show');
+});
+
+document.getElementById('cancelDeleteRowBtn').addEventListener('click', ()=>{
+  pendingDeleteKey = null;
+  deleteRowOverlay.classList.remove('show');
+});
+
+document.getElementById('confirmDeleteRowBtn').addEventListener('click', async ()=>{
+  const key = pendingDeleteKey;
+  pendingDeleteKey = null;
+  deleteRowOverlay.classList.remove('show');
+  if(key){ await deleteOnboardingRow(key); }
 });
 
 // ---------- Site-wide password gate ----------
