@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Advertiser Onboarding — fullthrottle.ai</title>
@@ -520,6 +519,16 @@ function identityKeyFor(r){
   return n ? `NAME:${n}` : '';
 }
 
+// Notes/Assignee in the standard tables have always been keyed by raw OHQ ID. Keep that exact
+// key whenever OHQ ID is present (so nothing already saved gets orphaned), but fall back to the
+// same identity scheme used elsewhere when OHQ ID itself is blank — otherwise saves silently
+// no-op for any account missing an OHQ ID.
+function standardRowKey(r){
+  const raw = (r.ohqId || '').trim().toUpperCase();
+  if(raw) return raw;
+  return identityKeyFor(r);
+}
+
 function parseStoredValue(value){
   if(value === null || value === undefined) return null;
   if(typeof value === 'object') return value;
@@ -644,7 +653,7 @@ async function saveAgencyStatus(ohqId, status){
 // (rows that weren't already present before this upload). Existing assignments are never touched.
 async function autoAssignRotation(newRows, keyFn){
   if(!newRows.length) return;
-  keyFn = keyFn || (r => (r.ohqId || '').trim().toUpperCase());
+  keyFn = keyFn || (r => standardRowKey(r));
   let current = { rotationIndex: 0, assignments: {} };
   try{
     const asg = await storageGet('reconcile:assignees');
@@ -918,7 +927,7 @@ function renderSection(key, rows, hasHits){
   } else {
     table.style.display = ''; empty.style.display = 'none';
     tbody.innerHTML = filtered.map(r => {
-      const upId = (r.ohqId||'').toUpperCase();
+      const upId = standardRowKey(r);
       const activeEl = document.activeElement;
       const isEditingThis = activeEl && activeEl.classList && activeEl.classList.contains('note-input') && activeEl.dataset.noteid && activeEl.dataset.noteid.toUpperCase() === upId;
       const noteVal = isEditingThis ? activeEl.value : (notesMap[upId] || '');
@@ -927,8 +936,8 @@ function renderSection(key, rows, hasHits){
       return `
       <tr>
         <td class="company">${escapeHtml(r.accountName)}</td>
-        <td class="note-cell"><div class="note-wrap"><input class="note-input" type="text" placeholder="Add a note…" data-noteid="${escapeHtml(r.ohqId)}" value="${escapeHtml(noteVal)}"><button type="button" class="copy-note-btn" data-noteid="${escapeHtml(r.ohqId)}" title="Copy script"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></td>
-        ${(key === 'new' || key === 'pending') ? `<td class="note-cell"><input class="assignee-input" type="text" placeholder="Unassigned" data-assigneeid="${escapeHtml(r.ohqId)}" value="${escapeHtml(assigneeVal)}"></td>` : ''}
+        <td class="note-cell"><div class="note-wrap"><input class="note-input" type="text" placeholder="Add a note…" data-noteid="${escapeHtml(upId)}" value="${escapeHtml(noteVal)}"><button type="button" class="copy-note-btn" data-noteid="${escapeHtml(upId)}" title="Copy script"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></td>
+        ${(key === 'new' || key === 'pending') ? `<td class="note-cell"><input class="assignee-input" type="text" placeholder="Unassigned" data-assigneeid="${escapeHtml(upId)}" value="${escapeHtml(assigneeVal)}"></td>` : ''}
         <td class="mono">${escapeHtml(r.ohqId)}</td>
         <td class="mono">${escapeHtml(r.channelOhqId)}</td>
         <td class="mono core-channel-col">${escapeHtml(r.coreChannelId)}</td>
@@ -1109,10 +1118,11 @@ function downloadCsv(rows, filename, hasHits, includeAssignee){
   if(includeAssignee) headers.push('Assignee');
   const lines = [headers.join(',')];
   rows.forEach(r => {
+    const rowKey = standardRowKey(r);
     const vals = [r.accountName, r.ohqId, r.channelOhqId, r.coreChannelId, r.website, r.channel];
     if(hasHits) vals.push(r.hitsYda, r.hits7d, r.hhYda);
-    vals.push(notesMap[(r.ohqId||'').toUpperCase()] || '');
-    if(includeAssignee) vals.push(assigneesData.assignments[(r.ohqId||'').toUpperCase()] || '');
+    vals.push(notesMap[rowKey] || '');
+    if(includeAssignee) vals.push(assigneesData.assignments[rowKey] || '');
     lines.push(vals.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(','));
   });
   const blob = new Blob([lines.join('\n')], { type:'text/csv' });
