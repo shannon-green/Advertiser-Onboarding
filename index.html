@@ -187,6 +187,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
 #appRoot{ display:none; }
 #appRoot.unlocked{ display:block; }
 #appRoot.hide-core-channel .core-channel-col{ display:none; }
+#appRoot.hide-opp-owner .opp-owner-col{ display:none; }
 </style>
 </head>
 <body>
@@ -240,7 +241,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="upload-grid">
     <div class="upload-slot" id="slotOnboard">
       <h4>Daily Onboarding List</h4>
-      <div class="filehint">.csv or .xlsx — Account Name, OHQ ID, Channel OHQ ID, Core Channel ID, Website, Channel</div>
+      <div class="filehint">.csv or .xlsx — Account Name, OHQ ID, Channel OHQ ID, Core Channel ID, Website, Channel, Opportunity Owner</div>
       <button class="btn btn-primary" onclick="document.getElementById('fileOnboard').click()">Choose file</button>
       <input type="file" id="fileOnboard" accept=".csv,.xlsx,.xls">
       <div class="last" id="lastOnboard">No file uploaded yet</div>
@@ -254,7 +255,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     </div>
     <div class="upload-slot" id="slotAgency">
       <h4>New Agency List</h4>
-      <div class="filehint">.csv or .xlsx — Account Name, Self Serve or Managed, Opp Owner</div>
+      <div class="filehint">.csv or .xlsx — Account Name, Self Serve or Managed, Opportunity Owner</div>
       <button class="btn btn-primary" onclick="document.getElementById('fileAgency').click()">Choose file</button>
       <input type="file" id="fileAgency" accept=".csv,.xlsx,.xls">
       <div class="last" id="lastAgency">No file uploaded yet</div>
@@ -275,7 +276,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableNew">
-      <thead><tr><th class="sortable-th" data-tablekey="new" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="new" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="new" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="new" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="new" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyNew">Upload both files to see results.</div>
@@ -291,7 +292,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneePending"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tablePending">
-      <thead><tr><th class="sortable-th" data-tablekey="pending" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="pending" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="pending" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="pending" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="pending" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyPending">Upload both files to see results.</div>
@@ -307,7 +308,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"></div>
   <div class="table-scroll">
     <table id="tableInstalled">
-      <thead><tr><th class="sortable-th" data-tablekey="installed" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="installed" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="installed" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="installed" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="installed" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyInstalled">Upload both files to see results.</div>
@@ -323,7 +324,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchCanceled" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeCanceled"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableCanceled">
-      <thead><tr><th class="sortable-th" data-tablekey="canceled" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="canceled" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="canceled" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="canceled" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="canceled" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyCanceled">No canceled onboardings.</div>
@@ -341,7 +342,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyNew">
-      <thead><tr><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="oppOwner">Opp Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyAgencyNew">Upload the New Agency List to see results.</div>
@@ -356,7 +357,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyComplete"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyComplete">
-      <thead><tr><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="oppOwner">Opp Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
+      <thead><tr><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyAgencyComplete">No agency accounts marked complete yet.</div>
@@ -1043,6 +1044,7 @@ async function handleFile(kind, file){
       coreChannelId: (normKey(r,"Core Channel ID")||"").trim(),
       website: (normKey(r,"Website")||"").trim(),
       channel: (normKey(r,"Channel","Channel Name","Reseller Channel","Partner Channel","Partner")||"").trim(),
+      oppOwner: (normKey(r,"Opportunity Owner","Opp Owner")||"").trim(),
     })).filter(r => r.accountName), 'channelOhqId', 'ohqId');
     const mergeResult = mergeOnboardingKeepingExisting(onboardData, parsedRows);
     onboardData = mergeResult.rows;
@@ -1067,7 +1069,7 @@ async function handleFile(kind, file){
       website: "",
       channel: "New Agency", // every account in this file belongs to New Agency by definition
       selfServeOrManaged: (normKey(r,"Self Serve or Managed")||"").trim(),
-      oppOwner: (normKey(r,"Opp Owner")||"").trim(),
+      oppOwner: (normKey(r,"Opportunity Owner","Opp Owner")||"").trim(),
     })).filter(r => r.accountName), 'accountName');
     const mergeResult = mergeOnboardingKeepingExisting(onboardData, parsedRows);
     onboardData = mergeResult.rows;
@@ -1131,7 +1133,7 @@ function reconcile(){
     }
     if(!o.dateUploaded){ o.dateUploaded = todayDateString(); datesChanged = true; } // backfill for accounts added before this field existed
 
-    const base = { accountName:o.accountName, ohqId:o.ohqId, channelOhqId:o.channelOhqId, coreChannelId:o.coreChannelId, website:o.website, channel:o.channel, __rowIndex: rowIndex, dateUploaded:o.dateUploaded, dateScriptInstalled:o.dateScriptInstalled || '' };
+    const base = { accountName:o.accountName, ohqId:o.ohqId, channelOhqId:o.channelOhqId, coreChannelId:o.coreChannelId, website:o.website, channel:o.channel, oppOwner:o.oppOwner, __rowIndex: rowIndex, dateUploaded:o.dateUploaded, dateScriptInstalled:o.dateScriptInstalled || '' };
 
     if(setupStatusFor(standardRowKey(o)) === 'canceled'){
       buckets.canceled.push(base);
@@ -1221,6 +1223,7 @@ function renderSection(key, rows, hasHits){
         <td class="mono core-channel-col">${escapeHtml(r.coreChannelId)}</td>
         <td class="mono">${escapeHtml(r.website)}</td>
         <td>${escapeHtml(r.channel)}</td>
+        <td class="opp-owner-col">${escapeHtml(r.oppOwner)}</td>
         ${hasHits ? `<td class="mono">${r.hitsYda}</td><td class="mono">${r.hits7d}</td><td class="mono">${r.hhYda}</td>` : ''}
         <td class="mono">${escapeHtml(r.dateUploaded)}</td>
         <td class="mono">${escapeHtml(r.dateScriptInstalled)}</td>
@@ -1294,7 +1297,7 @@ function renderAgencySection(searchKey, rows, tableId, emptyId, badgeId, noDataY
 }
 
 function downloadAgencyCsv(rows, filename){
-  const headers = ['Account Name','Assignee','Status','Self Serve or Managed','Opp Owner','Date Uploaded'];
+  const headers = ['Account Name','Assignee','Status','Self Serve or Managed','Opportunity Owner','Date Uploaded'];
   const lines = [headers.join(',')];
   rows.forEach(r => {
     const upId = identityKeyFor(r);
@@ -1418,7 +1421,7 @@ document.getElementById('filterAssigneeAgencyComplete').addEventListener('change
 
 // ---------- CSV download ----------
 function downloadCsv(rows, filename, hasHits, includeAssignee){
-  const headers = ['Account Name','OHQ ID','Channel OHQ ID','Core Channel ID','Website','Channel'];
+  const headers = ['Account Name','OHQ ID','Channel OHQ ID','Core Channel ID','Website','Channel','Opportunity Owner'];
   if(hasHits) headers.push('Hits (YDA)','Hits (7d)','HH (YDA)');
   headers.push('Script');
   if(includeAssignee) headers.push('Assignee');
@@ -1426,7 +1429,7 @@ function downloadCsv(rows, filename, hasHits, includeAssignee){
   const lines = [headers.join(',')];
   rows.forEach(r => {
     const rowKey = standardRowKey(r);
-    const vals = [r.accountName, r.ohqId, r.channelOhqId, r.coreChannelId, r.website, r.channel];
+    const vals = [r.accountName, r.ohqId, r.channelOhqId, r.coreChannelId, r.website, r.channel, r.oppOwner];
     if(hasHits) vals.push(r.hitsYda, r.hits7d, r.hhYda);
     vals.push(notesMap[rowKey] || '');
     if(includeAssignee) vals.push(assigneesData.assignments[rowKey] || '');
@@ -1557,6 +1560,11 @@ function updateCoreChannelVisibility(scope){
   appRoot.classList.toggle('hide-core-channel', !shouldShow);
 }
 
+function updateOppOwnerVisibility(scope){
+  const shouldShow = scope === 'MASTER' || scope === 'IHEART' || scope === 'FT_DIRECT';
+  appRoot.classList.toggle('hide-opp-owner', !shouldShow);
+}
+
 function updatePipelineVisibility(scope){
   const isAgencyOnlyView = scope === 'NEW_AGENCY';
   const showAgencyPanels = scope === 'NEW_AGENCY' || scope === 'MASTER';
@@ -1574,6 +1582,7 @@ function unlockSite(scope){
   updateBrandMarkColor(scope);
   updateMainTitle(scope);
   updateCoreChannelVisibility(scope);
+  updateOppOwnerVisibility(scope);
   updatePipelineVisibility(scope);
   try{ sessionStorage.setItem('stream_onboarding_view', scope); }catch(e){}
   render();
