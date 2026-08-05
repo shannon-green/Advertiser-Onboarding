@@ -218,6 +218,11 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="card installed"><div class="k">Script Installed</div><div class="v" id="cardInstalled">0</div><div class="bar"></div></div>
 </div>
 
+<div class="cards" id="agencyCards" style="display:none;">
+  <div class="card new"><div class="k">New Agency</div><div class="v" id="cardAgencyNew">0</div><div class="bar"></div></div>
+  <div class="card installed"><div class="k">Agency Set-Up Complete</div><div class="v" id="cardAgencyComplete">0</div><div class="bar"></div></div>
+</div>
+
 <!-- Team upload (hidden by default) -->
 <div class="panel upload-panel" id="uploadPanel">
   <div class="panel-head">
@@ -977,6 +982,8 @@ function renderAgencyPanels(){
   const rows = getAgencyRows();
   const newGroup = rows.filter(r => agencyStatusFor(identityKeyFor(r)) !== 'complete');
   const completeGroup = rows.filter(r => agencyStatusFor(identityKeyFor(r)) === 'complete');
+  document.getElementById('cardAgencyNew').textContent = newGroup.length;
+  document.getElementById('cardAgencyComplete').textContent = completeGroup.length;
   renderAgencySection('new', newGroup, 'tableAgencyNew', 'emptyAgencyNew', 'badgeAgencyNew', rows.length === 0);
   renderAgencySection('complete', completeGroup, 'tableAgencyComplete', 'emptyAgencyComplete', 'badgeAgencyComplete', rows.length === 0);
   window._agencyBuckets = { new: newGroup, complete: completeGroup };
@@ -1257,7 +1264,8 @@ function updateBrandMarkColor(scope){
 
 const mainTitleEl = document.getElementById('mainTitle');
 const VIEW_TITLES = {
-  "NEW_AGENCY": "Agency Onboarding"
+  "NEW_AGENCY": "Agency Onboarding",
+  "MASTER": "Advertiser & Agency Onboardings"
 };
 function updateMainTitle(scope){
   mainTitleEl.textContent = VIEW_TITLES[scope] || "Advertiser Onboarding";
@@ -1275,6 +1283,7 @@ function updatePipelineVisibility(scope){
   document.getElementById('standardCards').style.display = isAgencyOnlyView ? 'none' : '';
   document.getElementById('standardPipelinePanels').style.display = isAgencyOnlyView ? 'none' : '';
   document.getElementById('agencyPipelinePanels').style.display = showAgencyPanels ? '' : 'none';
+  document.getElementById('agencyCards').style.display = showAgencyPanels ? '' : 'none';
 }
 
 function unlockSite(scope){
