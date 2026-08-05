@@ -72,7 +72,12 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .count-badge.pending{ background:var(--danger-dim); color:var(--danger); }
 .count-badge.installed{ background:var(--success-dim); color:var(--success); }
 .panel-head-right{ display:flex; gap:8px; }
-.panel-body-top{ padding:14px 20px; border-bottom:1px solid var(--border); }
+.panel-body-top{ padding:14px 20px; border-bottom:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.assignee-filter{
+  background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:9px 13px;
+  color:var(--text); font-family:var(--body); font-size:13px; cursor:pointer;
+}
+.assignee-filter:focus{ outline:none; border-color:var(--accent); }
 .search{ background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:9px 13px; color:var(--text); font-family:var(--body); font-size:13px; width:100%; max-width:340px;}
 .search:focus{ outline:none; border-color:var(--accent); }
 table{ width:100%; border-collapse:collapse; font-size:13px; }
@@ -254,7 +259,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>New Onboardings</h2><span class="count-badge new" id="badgeNew">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadNew">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, Channel ID, or URL…"></div>
+  <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneeNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableNew">
       <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th></th></tr></thead>
@@ -270,7 +275,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Pending Script Install</h2><span class="count-badge pending" id="badgePending">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadPending">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, Channel ID, or URL…"></div>
+  <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneePending"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tablePending">
       <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
@@ -304,7 +309,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>New Agency</h2><span class="count-badge new" id="badgeAgencyNew">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadAgencyNew">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, Channel ID, or URL…"></div>
+  <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneeAgencyNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyNew">
       <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th></th></tr></thead>
@@ -319,7 +324,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Agency Set-Up Complete</h2><span class="count-badge installed" id="badgeAgencyComplete">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadAgencyComplete">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, Channel ID, or URL…"></div>
+  <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneeAgencyComplete"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyComplete">
       <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th></th></tr></thead>
@@ -447,6 +452,7 @@ let assigneesData = { rotationIndex: 0, assignments: {} };
 const ROTATION_NAMES = ['Genna','Morgan','David','Bill'];
 let agencyStatusData = {};
 let agencySearchTerms = { new: '', complete: '' };
+let agencyAssigneeFilters = { new: '', complete: '' };
 
 function agencyStatusFor(ohqId){
   const key = (ohqId || '').trim().toUpperCase();
@@ -501,6 +507,7 @@ function viewScopeForChannel(channel){
 }
 
 let searchTerms = { new:'', pending:'', installed:'' };
+let assigneeFilters = { new:'', pending:'' };
 let noteSaveTimers = {};
 let assigneeSaveTimers = {};
 let editingNoteKeys = new Set();
@@ -913,8 +920,15 @@ function matchesSearch(row, term){
   return (row.accountName||'').toLowerCase().includes(t) || (row.ohqId||'').toLowerCase().includes(t) || (row.channelOhqId||'').toLowerCase().includes(t) || (row.coreChannelId||'').toLowerCase().includes(t) || (row.website||'').toLowerCase().includes(t) || (row.channel||'').toLowerCase().includes(t);
 }
 
+function matchesAssigneeFilter(assigneeVal, filterValue){
+  if(!filterValue) return true; // no filter selected
+  const val = (assigneeVal || '').trim();
+  if(filterValue === 'unassigned') return !val;
+  return val === filterValue;
+}
+
 function renderSection(key, rows, hasHits){
-  const filtered = rows.filter(r => matchesSearch(r, searchTerms[key]));
+  const filtered = rows.filter(r => matchesSearch(r, searchTerms[key]) && matchesAssigneeFilter(assigneesData.assignments[standardRowKey(r)], assigneeFilters[key]));
   const tbody = document.querySelector(`#table${cap(key)} tbody`);
   const empty = document.getElementById(`empty${cap(key)}`);
   const table = document.getElementById(`table${cap(key)}`);
@@ -969,7 +983,7 @@ function renderAgencyPanels(){
 
 function renderAgencySection(searchKey, rows, tableId, emptyId, badgeId, noDataYet){
   const term = agencySearchTerms[searchKey] || '';
-  const filtered = rows.filter(r => matchesSearch(r, term));
+  const filtered = rows.filter(r => matchesSearch(r, term) && matchesAssigneeFilter(assigneesData.assignments[identityKeyFor(r)], agencyAssigneeFilters[searchKey]));
   const tbody = document.querySelector(`#${tableId} tbody`);
   const empty = document.getElementById(emptyId);
   const table = document.getElementById(tableId);
@@ -1110,6 +1124,11 @@ document.getElementById('searchPending').addEventListener('input', e=>{ searchTe
 document.getElementById('searchInstalled').addEventListener('input', e=>{ searchTerms.installed = e.target.value; render(); });
 document.getElementById('searchAgencyNew').addEventListener('input', e=>{ agencySearchTerms.new = e.target.value; renderAgencyPanels(); });
 document.getElementById('searchAgencyComplete').addEventListener('input', e=>{ agencySearchTerms.complete = e.target.value; renderAgencyPanels(); });
+
+document.getElementById('filterAssigneeNew').addEventListener('change', e=>{ assigneeFilters.new = e.target.value; render(); });
+document.getElementById('filterAssigneePending').addEventListener('change', e=>{ assigneeFilters.pending = e.target.value; render(); });
+document.getElementById('filterAssigneeAgencyNew').addEventListener('change', e=>{ agencyAssigneeFilters.new = e.target.value; renderAgencyPanels(); });
+document.getElementById('filterAssigneeAgencyComplete').addEventListener('change', e=>{ agencyAssigneeFilters.complete = e.target.value; renderAgencyPanels(); });
 
 // ---------- CSV download ----------
 function downloadCsv(rows, filename, hasHits, includeAssignee){
