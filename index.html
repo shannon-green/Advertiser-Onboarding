@@ -1119,6 +1119,9 @@ function reconcile(){
     if(currentViewScope && currentViewScope !== 'MASTER' && viewScopeForChannel(o.channel) !== currentViewScope){
       return; // this account's channel isn't part of the currently unlocked view
     }
+    if((o.channel || '').trim().toLowerCase() === 'new agency'){
+      return; // New Agency accounts only ever show in the dedicated New Agency / Agency Set-Up Complete panels
+    }
     const base = { accountName:o.accountName, ohqId:o.ohqId, channelOhqId:o.channelOhqId, coreChannelId:o.coreChannelId, website:o.website, channel:o.channel, __rowIndex: rowIndex };
 
     if(setupStatusFor(standardRowKey(o)) === 'canceled'){
