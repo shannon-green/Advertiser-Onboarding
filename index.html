@@ -549,10 +549,10 @@ let pendingDeleteKey = null;
 let lastActiveUploadedAt = null;
 
 function identityKeyFor(r){
-  const c = (r.channelOhqId || '').trim().toUpperCase();
-  if(c) return c;
   const o = (r.ohqId || '').trim().toUpperCase();
   if(o) return `OHQ:${o}`;
+  const c = (r.channelOhqId || '').trim().toUpperCase();
+  if(c) return c;
   const n = (r.accountName || '').trim().toUpperCase();
   return n ? `NAME:${n}` : '';
 }
@@ -793,29 +793,111 @@ function dedupeByOhqId(rows, keyField, fallbackField){
   return result;
 }
 
+// Returns every identifier this row could plausibly be looked up by, from most to least
+// permanent: OHQ ID and Channel OHQ ID rarely change once assigned; Account Name is the only
+// thing available before either exists yet.
+function rowIdentifiers(r){
+  const ids = [];
+  const o = (r.ohqId || '').trim().toUpperCase();
+  if(o) ids.push(`OHQ:${o}`);
+  const c = (r.channelOhqId || '').trim().toUpperCase();
+  if(c) ids.push(`CHOHQ:${c}`);
+  const n = (r.accountName || '').trim().toUpperCase();
+  if(n) ids.push(`NAME:${n}`);
+  return ids;
+}
+
 function mergeOnboardingKeepingExisting(existingRows, newRows){
-  // Prefer Channel OHQ ID as the identity key; fall back to OHQ ID for rows that don't have one yet
-  // (e.g. New Onboardings), so re-uploading the same file doesn't create duplicate rows.
-  // Rows that already exist get their fields refreshed from the new upload (e.g. a corrected
-  // Channel value) rather than being left frozen with whatever they had the first time they appeared.
-  const indexByKey = new Map();
-  existingRows.forEach((r, idx) => {
-    const k = identityKeyFor(r);
-    if(k) indexByKey.set(k, idx);
-  });
+  // Match a new row to an existing one if they share ANY identifier — OHQ ID, Channel OHQ ID,
+  // or Account Name. This is what lets an account first seen with only a name (no IDs generated
+  // yet) get correctly recognized as the same account once OHQ ID / Channel OHQ ID appear on a
+  // later upload, instead of creating a duplicate row that's stuck without the new IDs forever.
   const merged = [...existingRows];
-  newRows.forEach(r => {
-    const key = identityKeyFor(r);
-    if(!key){ merged.push(r); return; }
-    if(indexByKey.has(key)){
-      const idx = indexByKey.get(key);
-      merged[idx] = { ...merged[idx], ...r };
-    } else {
-      merged.push(r);
-      indexByKey.set(key, merged.length - 1);
-    }
+  const idMap = new Map();
+  merged.forEach((r, idx) => {
+    rowIdentifiers(r).forEach(id => { if(!idMap.has(id)) idMap.set(id, idx); });
   });
-  return merged;
+
+  const keyMigrations = []; // { oldKey, newKey } — for moving notes/assignee/status along with a row whose primary key changed
+
+  newRows.forEach(r => {
+    const ids = rowIdentifiers(r);
+    let matchIdx = null;
+    for(const id of ids){
+      if(idMap.has(id)){ matchIdx = idMap.get(id); break; }
+    }
+    if(matchIdx === null){
+      if(!ids.length){ merged.push(r); return; }
+      merged.push(r);
+      const newIdx = merged.length - 1;
+      ids.forEach(id => idMap.set(id, newIdx));
+      return;
+    }
+    const oldKey = identityKeyFor(merged[matchIdx]);
+    merged[matchIdx] = { ...merged[matchIdx], ...r };
+    const newKey = identityKeyFor(merged[matchIdx]);
+    if(oldKey && newKey && oldKey !== newKey){
+      keyMigrations.push({ oldKey, newKey });
+    }
+    rowIdentifiers(merged[matchIdx]).forEach(id => idMap.set(id, matchIdx));
+  });
+
+  return { rows: merged, keyMigrations };
+}
+
+// Moves any notes/assignee/set-up status stored under an account's old identity key to its new
+// one, whenever an upload gives it a more permanent identifier (e.g. OHQ ID gets generated for
+// an account that previously only had a name) — so nothing gets silently orphaned.
+async function migrateSideDataKeys(keyMigrations){
+  if(!keyMigrations || !keyMigrations.length) return;
+
+  try{
+    let notes = {};
+    const nt = await storageGet('reconcile:notes');
+    if(nt && nt.value) notes = parseStoredValue(nt.value) || {};
+    let changed = false;
+    keyMigrations.forEach(({oldKey, newKey}) => {
+      if(notes[oldKey] !== undefined){
+        if(notes[newKey] === undefined) notes[newKey] = notes[oldKey];
+        delete notes[oldKey];
+        changed = true;
+      }
+    });
+    if(changed){ await storageSet('reconcile:notes', JSON.stringify(notes)); notesMap = notes; }
+  }catch(e){ /* best-effort */ }
+
+  try{
+    let asg = { rotationIndex: 0, assignments: {} };
+    const st = await storageGet('reconcile:assignees');
+    if(st && st.value){
+      const parsed = parseStoredValue(st.value);
+      if(parsed) asg = { rotationIndex: parsed.rotationIndex || 0, assignments: parsed.assignments || {} };
+    }
+    let changed = false;
+    keyMigrations.forEach(({oldKey, newKey}) => {
+      if(asg.assignments[oldKey] !== undefined){
+        if(asg.assignments[newKey] === undefined) asg.assignments[newKey] = asg.assignments[oldKey];
+        delete asg.assignments[oldKey];
+        changed = true;
+      }
+    });
+    if(changed){ await storageSet('reconcile:assignees', JSON.stringify(asg)); assigneesData = asg; }
+  }catch(e){ /* best-effort */ }
+
+  try{
+    let statusData = {};
+    const sst = await storageGet('reconcile:setupStatus');
+    if(sst && sst.value) statusData = parseStoredValue(sst.value) || {};
+    let changed = false;
+    keyMigrations.forEach(({oldKey, newKey}) => {
+      if(statusData[oldKey] !== undefined){
+        if(statusData[newKey] === undefined) statusData[newKey] = statusData[oldKey];
+        delete statusData[oldKey];
+        changed = true;
+      }
+    });
+    if(changed){ await storageSet('reconcile:setupStatus', JSON.stringify(statusData)); setupStatusData = statusData; }
+  }catch(e){ /* best-effort */ }
 }
 
 function parseUploadedFile(file){
@@ -865,7 +947,9 @@ async function handleFile(kind, file){
       website: (normKey(r,"Website")||"").trim(),
       channel: (normKey(r,"Channel","Channel Name","Reseller Channel","Partner Channel","Partner")||"").trim(),
     })).filter(r => r.accountName), 'channelOhqId', 'ohqId');
-    onboardData = mergeOnboardingKeepingExisting(onboardData, parsedRows);
+    const mergeResult = mergeOnboardingKeepingExisting(onboardData, parsedRows);
+    onboardData = mergeResult.rows;
+    await migrateSideDataKeys(mergeResult.keyMigrations);
     await saveFile('onboard', onboardData, file.name);
     lastOnboardUploadedAt = new Date().toISOString();
     lastOnboardFilename = file.name;
@@ -888,7 +972,9 @@ async function handleFile(kind, file){
       selfServeOrManaged: (normKey(r,"Self Serve or Managed")||"").trim(),
       oppOwner: (normKey(r,"Opp Owner")||"").trim(),
     })).filter(r => r.accountName), 'accountName');
-    onboardData = mergeOnboardingKeepingExisting(onboardData, parsedRows);
+    const mergeResult = mergeOnboardingKeepingExisting(onboardData, parsedRows);
+    onboardData = mergeResult.rows;
+    await migrateSideDataKeys(mergeResult.keyMigrations);
     await persistOnboardRows();
 
     lastAgencyUploadedAt = new Date().toISOString();
