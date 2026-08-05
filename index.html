@@ -975,8 +975,8 @@ function getAgencyRows(){
 
 function renderAgencyPanels(){
   const rows = getAgencyRows();
-  const newGroup = rows.filter(r => agencyStatusFor(r.ohqId) !== 'complete');
-  const completeGroup = rows.filter(r => agencyStatusFor(r.ohqId) === 'complete');
+  const newGroup = rows.filter(r => agencyStatusFor(identityKeyFor(r)) !== 'complete');
+  const completeGroup = rows.filter(r => agencyStatusFor(identityKeyFor(r)) === 'complete');
   renderAgencySection('new', newGroup, 'tableAgencyNew', 'emptyAgencyNew', 'badgeAgencyNew', rows.length === 0);
   renderAgencySection('complete', completeGroup, 'tableAgencyComplete', 'emptyAgencyComplete', 'badgeAgencyComplete', rows.length === 0);
   window._agencyBuckets = { new: newGroup, complete: completeGroup };
