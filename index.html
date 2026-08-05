@@ -55,7 +55,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .btn-sm{ padding:6px 12px; font-size:12px; border-radius:7px; }
 .btn-danger-ghost{ color:var(--danger); border-color: rgba(229,86,107,0.35); background:transparent; }
 .btn-danger-ghost:hover{ border-color:var(--danger); color:var(--danger); background:var(--danger-dim); }
-.cards{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; margin-bottom:24px; }
+.cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:24px; }
 .card{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; position:relative; overflow:hidden;}
 .card .k{ font-size:11px; color:var(--text-dim); font-family:var(--mono); text-transform:uppercase; letter-spacing:0.05em;}
 .card .v{ font-family:var(--display); font-size:28px; font-weight:700; margin-top:6px;}
@@ -63,6 +63,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .card.new .bar{ background:var(--warning); }
 .card.pending .bar{ background:var(--danger); }
 .card.installed .bar{ background:var(--success); }
+.card.canceled .bar{ background:var(--text-faint); }
 .panel{ background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px;}
 .panel-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px;}
 .panel-head-left{ display:flex; align-items:center; gap:10px; }
@@ -71,6 +72,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .count-badge.new{ background:var(--warning-dim); color:var(--warning); }
 .count-badge.pending{ background:var(--danger-dim); color:var(--danger); }
 .count-badge.installed{ background:var(--success-dim); color:var(--success); }
+.count-badge.canceled{ background:rgba(93,100,128,0.15); color:var(--text-faint); }
 .panel-head-right{ display:flex; gap:8px; }
 .panel-body-top{ padding:14px 20px; border-bottom:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 .assignee-filter{
@@ -117,7 +119,7 @@ td.note-cell{ padding:6px 10px; }
 .assignee-input:focus{ outline:none; border-color:var(--accent); }
 .assignee-input.saved{ border-color: var(--success); }
 .assignee-input::placeholder{ color:var(--text-faint); }
-.status-select{
+.status-select, .setup-status-select{
   background:var(--surface-2); border:1px solid var(--border); border-radius:7px;
   padding:7px 8px; color:var(--text); font-family:var(--body); font-size:12.5px; cursor:pointer;
 }
@@ -216,6 +218,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="card new"><div class="k">New Onboardings</div><div class="v" id="cardNew">0</div><div class="bar"></div></div>
   <div class="card pending"><div class="k">Pending Script Install</div><div class="v" id="cardPending">0</div><div class="bar"></div></div>
   <div class="card installed"><div class="k">Script Installed</div><div class="v" id="cardInstalled">0</div><div class="bar"></div></div>
+  <div class="card canceled"><div class="k">Canceled</div><div class="v" id="cardCanceled">0</div><div class="bar"></div></div>
 </div>
 
 <div class="cards" id="agencyCards" style="display:none;">
@@ -267,7 +270,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableNew">
-      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th></th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>Set-Up Status</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyNew">Upload both files to see results.</div>
@@ -283,7 +286,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneePending"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tablePending">
-      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>Set-Up Status</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyPending">Upload both files to see results.</div>
@@ -299,10 +302,26 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"></div>
   <div class="table-scroll">
     <table id="tableInstalled">
-      <thead><tr><th>Account Name</th><th>Script</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Script</th><th>Set-Up Status</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th>Hits (YDA)</th><th>Hits (7d)</th><th>HH (YDA)</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyInstalled">Upload both files to see results.</div>
+  </div>
+</div>
+
+<!-- Canceled -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-head-left"><h2>Canceled</h2><span class="count-badge canceled" id="badgeCanceled">0</span></div>
+    <div class="panel-head-right"><button class="btn btn-sm" id="downloadCanceled">↓ Download CSV</button></div>
+  </div>
+  <div class="panel-body-top"><input class="search" id="searchCanceled" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeCanceled"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="table-scroll">
+    <table id="tableCanceled">
+      <thead><tr><th>Account Name</th><th>Script</th><th>Assignee</th><th>Set-Up Status</th><th>OHQ ID</th><th>Channel OHQ ID</th><th class="core-channel-col">Core Channel ID</th><th>Website</th><th>Channel</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="empty-state" id="emptyCanceled">No canceled onboardings.</div>
   </div>
 </div>
 </div>
@@ -456,6 +475,12 @@ let notesMap = {};
 let assigneesData = { rotationIndex: 0, assignments: {} };
 const ROTATION_NAMES = ['Genna','Morgan','David','Bill'];
 let agencyStatusData = {};
+let setupStatusData = {};
+
+function setupStatusFor(key){
+  const k = (key || '').trim().toUpperCase();
+  return setupStatusData[k] || 'new_not_started';
+}
 let agencySearchTerms = { new: '', complete: '' };
 let agencyAssigneeFilters = { new: '', complete: '' };
 
@@ -511,8 +536,8 @@ function viewScopeForChannel(channel){
   return CHANNEL_VIEW_MAP[key] || CHANNEL_VIEW_DEFAULT;
 }
 
-let searchTerms = { new:'', pending:'', installed:'' };
-let assigneeFilters = { new:'', pending:'' };
+let searchTerms = { new:'', pending:'', installed:'', canceled:'' };
+let assigneeFilters = { new:'', pending:'', canceled:'' };
 let noteSaveTimers = {};
 let assigneeSaveTimers = {};
 let editingNoteKeys = new Set();
@@ -608,6 +633,11 @@ async function loadStoredData(){
     if(ast && ast.value){ agencyStatusData = parseStoredValue(ast.value) || {}; }
   }catch(e){ showStorageError(`Problem loading agency status: ${e.message}`); }
 
+  try{
+    const sst = await storageGet('reconcile:setupStatus');
+    if(sst && sst.value){ setupStatusData = parseStoredValue(sst.value) || {}; }
+  }catch(e){ showStorageError(`Problem loading set-up status: ${e.message}`); }
+
   render();
 }
 
@@ -659,6 +689,24 @@ async function saveAgencyStatus(ohqId, status){
     current[key] = status;
     await storageSet('reconcile:agencyStatus', JSON.stringify(current));
     agencyStatusData = current;
+  }catch(e){ /* best-effort */ }
+}
+
+// Set-Up Status for the standard pipeline (New Onboardings / Pending / Installed / Canceled).
+// Selecting Canceled moves the account into the Canceled group; any other value lets it fall
+// back into whichever stage the normal Channel OHQ ID / Hits logic determines.
+async function saveSetupStatus(key, status){
+  const upKey = (key || '').trim().toUpperCase();
+  if(!upKey) return;
+  try{
+    let current = {};
+    try{
+      const st = await storageGet('reconcile:setupStatus');
+      if(st && st.value) current = parseStoredValue(st.value) || {};
+    }catch(e){}
+    current[upKey] = status;
+    await storageSet('reconcile:setupStatus', JSON.stringify(current));
+    setupStatusData = current;
   }catch(e){ /* best-effort */ }
 }
 
@@ -888,13 +936,18 @@ function reconcile(){
   const activeByOhq = new Map();
   activeData.forEach(a => activeByOhq.set((a.channelClientId||'').toUpperCase(), a));
 
-  const buckets = { new: [], pending: [], installed: [] };
+  const buckets = { new: [], pending: [], installed: [], canceled: [] };
 
   onboardData.forEach(o => {
     if(currentViewScope && currentViewScope !== 'MASTER' && viewScopeForChannel(o.channel) !== currentViewScope){
       return; // this account's channel isn't part of the currently unlocked view
     }
     const base = { accountName:o.accountName, ohqId:o.ohqId, channelOhqId:o.channelOhqId, coreChannelId:o.coreChannelId, website:o.website, channel:o.channel };
+
+    if(setupStatusFor(standardRowKey(o)) === 'canceled'){
+      buckets.canceled.push(base);
+      return;
+    }
 
     if(!o.channelOhqId){
       buckets.new.push(base);
@@ -954,11 +1007,18 @@ function renderSection(key, rows, hasHits){
       const noteVal = isEditingThis ? activeEl.value : (notesMap[upId] || '');
       const isEditingAssignee = activeEl && activeEl.classList && activeEl.classList.contains('assignee-input') && activeEl.dataset.assigneeid && activeEl.dataset.assigneeid.toUpperCase() === upId;
       const assigneeVal = isEditingAssignee ? activeEl.value : (assigneesData.assignments[upId] || '');
+      const setupStatus = setupStatusFor(upId);
       return `
       <tr>
         <td class="company">${escapeHtml(r.accountName)}</td>
         <td class="note-cell"><div class="note-wrap"><input class="note-input" type="text" placeholder="Add a note…" data-noteid="${escapeHtml(upId)}" value="${escapeHtml(noteVal)}"><button type="button" class="copy-note-btn" data-noteid="${escapeHtml(upId)}" title="Copy script"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></td>
-        ${(key === 'new' || key === 'pending') ? `<td class="note-cell"><input class="assignee-input" type="text" placeholder="Unassigned" data-assigneeid="${escapeHtml(upId)}" value="${escapeHtml(assigneeVal)}"></td>` : ''}
+        ${(key === 'new' || key === 'pending' || key === 'canceled') ? `<td class="note-cell"><input class="assignee-input" type="text" placeholder="Unassigned" data-assigneeid="${escapeHtml(upId)}" value="${escapeHtml(assigneeVal)}"></td>` : ''}
+        <td class="note-cell"><select class="setup-status-select" data-setupstatusid="${escapeHtml(upId)}">
+          <option value="new_not_started" ${setupStatus==='new_not_started'?'selected':''}>New Not Started</option>
+          <option value="in_progress" ${setupStatus==='in_progress'?'selected':''}>Set-Up In Progress</option>
+          <option value="complete" ${setupStatus==='complete'?'selected':''}>Set-Up Complete</option>
+          <option value="canceled" ${setupStatus==='canceled'?'selected':''}>Canceled</option>
+        </select></td>
         <td class="mono">${escapeHtml(r.ohqId)}</td>
         <td class="mono">${escapeHtml(r.channelOhqId)}</td>
         <td class="mono core-channel-col">${escapeHtml(r.coreChannelId)}</td>
@@ -1088,6 +1148,14 @@ document.addEventListener('change', async e=>{
   renderAgencyPanels();
 });
 
+document.addEventListener('change', async e=>{
+  if(!(e.target.classList && e.target.classList.contains('setup-status-select'))) return;
+  const key = e.target.dataset.setupstatusid;
+  const status = e.target.value;
+  await saveSetupStatus(key, status);
+  render();
+});
+
 document.addEventListener('click', async e=>{
   const btn = e.target.closest && e.target.closest('.copy-note-btn');
   if(!btn) return;
@@ -1111,6 +1179,7 @@ function render(){
   document.getElementById('cardNew').textContent = b.new.length;
   document.getElementById('cardPending').textContent = b.pending.length;
   document.getElementById('cardInstalled').textContent = b.installed.length;
+  document.getElementById('cardCanceled').textContent = b.canceled.length;
 
   const activeEl = document.activeElement;
   const isTypingNote = activeEl && activeEl.classList && (activeEl.classList.contains('note-input') || activeEl.classList.contains('assignee-input'));
@@ -1118,6 +1187,7 @@ function render(){
     renderSection('new', b.new, false);
     renderSection('pending', b.pending, true);
     renderSection('installed', b.installed, true);
+    renderSection('canceled', b.canceled, false);
     if(currentViewScope === 'NEW_AGENCY' || currentViewScope === 'MASTER'){ renderAgencyPanels(); }
   }
 
@@ -1131,11 +1201,13 @@ function render(){
 document.getElementById('searchNew').addEventListener('input', e=>{ searchTerms.new = e.target.value; render(); });
 document.getElementById('searchPending').addEventListener('input', e=>{ searchTerms.pending = e.target.value; render(); });
 document.getElementById('searchInstalled').addEventListener('input', e=>{ searchTerms.installed = e.target.value; render(); });
+document.getElementById('searchCanceled').addEventListener('input', e=>{ searchTerms.canceled = e.target.value; render(); });
 document.getElementById('searchAgencyNew').addEventListener('input', e=>{ agencySearchTerms.new = e.target.value; renderAgencyPanels(); });
 document.getElementById('searchAgencyComplete').addEventListener('input', e=>{ agencySearchTerms.complete = e.target.value; renderAgencyPanels(); });
 
 document.getElementById('filterAssigneeNew').addEventListener('change', e=>{ assigneeFilters.new = e.target.value; render(); });
 document.getElementById('filterAssigneePending').addEventListener('change', e=>{ assigneeFilters.pending = e.target.value; render(); });
+document.getElementById('filterAssigneeCanceled').addEventListener('change', e=>{ assigneeFilters.canceled = e.target.value; render(); });
 document.getElementById('filterAssigneeAgencyNew').addEventListener('change', e=>{ agencyAssigneeFilters.new = e.target.value; renderAgencyPanels(); });
 document.getElementById('filterAssigneeAgencyComplete').addEventListener('change', e=>{ agencyAssigneeFilters.complete = e.target.value; renderAgencyPanels(); });
 
@@ -1145,6 +1217,7 @@ function downloadCsv(rows, filename, hasHits, includeAssignee){
   if(hasHits) headers.push('Hits (YDA)','Hits (7d)','HH (YDA)');
   headers.push('Script');
   if(includeAssignee) headers.push('Assignee');
+  headers.push('Set-Up Status');
   const lines = [headers.join(',')];
   rows.forEach(r => {
     const rowKey = standardRowKey(r);
@@ -1152,6 +1225,7 @@ function downloadCsv(rows, filename, hasHits, includeAssignee){
     if(hasHits) vals.push(r.hitsYda, r.hits7d, r.hhYda);
     vals.push(notesMap[rowKey] || '');
     if(includeAssignee) vals.push(assigneesData.assignments[rowKey] || '');
+    vals.push(setupStatusFor(rowKey));
     lines.push(vals.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(','));
   });
   const blob = new Blob([lines.join('\n')], { type:'text/csv' });
@@ -1163,6 +1237,7 @@ function downloadCsv(rows, filename, hasHits, includeAssignee){
 document.getElementById('downloadNew').addEventListener('click', ()=> downloadCsv(window._buckets?.new || [], 'new-onboardings.csv', false, true));
 document.getElementById('downloadPending').addEventListener('click', ()=> downloadCsv(window._buckets?.pending || [], 'pending-script-install.csv', true, true));
 document.getElementById('downloadInstalled').addEventListener('click', ()=> downloadCsv(window._buckets?.installed || [], 'script-installed.csv', true, false));
+document.getElementById('downloadCanceled').addEventListener('click', ()=> downloadCsv(window._buckets?.canceled || [], 'canceled-onboardings.csv', false, true));
 document.getElementById('downloadAgencyNew').addEventListener('click', ()=> downloadAgencyCsv(window._agencyBuckets?.new || [], 'new-agency.csv'));
 document.getElementById('downloadAgencyComplete').addEventListener('click', ()=> downloadAgencyCsv(window._agencyBuckets?.complete || [], 'agency-setup-complete.csv'));
 
