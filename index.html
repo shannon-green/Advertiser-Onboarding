@@ -241,7 +241,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     </div>
     <div class="upload-slot" id="slotAgency">
       <h4>New Agency List</h4>
-      <div class="filehint">.csv or .xlsx — Account Name, Self Serve or Managed</div>
+      <div class="filehint">.csv or .xlsx — Account Name, Self Serve or Managed, Opp Owner</div>
       <button class="btn btn-primary" onclick="document.getElementById('fileAgency').click()">Choose file</button>
       <input type="file" id="fileAgency" accept=".csv,.xlsx,.xls">
       <div class="last" id="lastAgency">No file uploaded yet</div>
@@ -312,7 +312,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneeAgencyNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyNew">
-      <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th></th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th>Opp Owner</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyAgencyNew">Upload the New Agency List to see results.</div>
@@ -327,7 +327,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
   <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, Channel ID, or URL…"><select class="assignee-filter" id="filterAssigneeAgencyComplete"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyComplete">
-      <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th></th></tr></thead>
+      <thead><tr><th>Account Name</th><th>Assignee</th><th>Status</th><th>Self Serve or Managed</th><th>Opp Owner</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="empty-state" id="emptyAgencyComplete">No agency accounts marked complete yet.</div>
@@ -833,6 +833,7 @@ async function handleFile(kind, file){
       website: "",
       channel: "New Agency", // every account in this file belongs to New Agency by definition
       selfServeOrManaged: (normKey(r,"Self Serve or Managed")||"").trim(),
+      oppOwner: (normKey(r,"Opp Owner")||"").trim(),
     })).filter(r => r.accountName), 'accountName');
     onboardData = mergeOnboardingKeepingExisting(onboardData, parsedRows);
     await persistOnboardRows();
@@ -1012,6 +1013,7 @@ function renderAgencySection(searchKey, rows, tableId, emptyId, badgeId, noDataY
           <option value="complete" ${status==='complete'?'selected':''}>Complete</option>
         </select></td>
         <td>${escapeHtml(r.selfServeOrManaged)}</td>
+        <td>${escapeHtml(r.oppOwner)}</td>
         <td class="delete-cell"><button type="button" class="delete-row-btn" data-deletekey="${escapeHtml(identityKeyFor(r))}" data-deletelabel="${escapeHtml(r.accountName)}" title="Remove this account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button></td>
       </tr>
     `;
@@ -1021,11 +1023,11 @@ function renderAgencySection(searchKey, rows, tableId, emptyId, badgeId, noDataY
 }
 
 function downloadAgencyCsv(rows, filename){
-  const headers = ['Account Name','Assignee','Status','Self Serve or Managed'];
+  const headers = ['Account Name','Assignee','Status','Self Serve or Managed','Opp Owner'];
   const lines = [headers.join(',')];
   rows.forEach(r => {
     const upId = identityKeyFor(r);
-    const vals = [r.accountName, assigneesData.assignments[upId] || '', agencyStatusFor(upId), r.selfServeOrManaged];
+    const vals = [r.accountName, assigneesData.assignments[upId] || '', agencyStatusFor(upId), r.selfServeOrManaged, r.oppOwner];
     lines.push(vals.map(v => `"${String(v ?? '').replace(/"/g,'""')}"`).join(','));
   });
   const blob = new Blob([lines.join('\n')], { type:'text/csv' });
