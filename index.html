@@ -310,7 +310,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Script Installed</h2><span class="count-badge installed" id="badgeInstalled">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadInstalled">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"><select class="oppowner-filter" id="filterOppOwnerInstalled"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeInstalled"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerInstalled"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableInstalled">
       <thead><tr><th class="sortable-th" data-tablekey="installed" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="installed" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th setup-status-col" data-tablekey="installed" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="installed" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="installed" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -637,7 +637,7 @@ function viewScopeForChannel(channel){
 }
 
 let searchTerms = { new:'', pending:'', installed:'', canceled:'' };
-let assigneeFilters = { new:'', pending:'', canceled:'' };
+let assigneeFilters = { new:'', pending:'', installed:'', canceled:'' };
 let oppOwnerFilters = { new:'', pending:'', installed:'', canceled:'' };
 let noteSaveTimers = {};
 let assigneeSaveTimers = {};
@@ -1450,6 +1450,7 @@ document.getElementById('searchAgencyComplete').addEventListener('input', e=>{ a
 document.getElementById('filterAssigneeNew').addEventListener('change', e=>{ assigneeFilters.new = e.target.value; render(); });
 document.getElementById('filterAssigneePending').addEventListener('change', e=>{ assigneeFilters.pending = e.target.value; render(); });
 document.getElementById('filterAssigneeCanceled').addEventListener('change', e=>{ assigneeFilters.canceled = e.target.value; render(); });
+document.getElementById('filterAssigneeInstalled').addEventListener('change', e=>{ assigneeFilters.installed = e.target.value; render(); });
 document.getElementById('filterAssigneeAgencyNew').addEventListener('change', e=>{ agencyAssigneeFilters.new = e.target.value; renderAgencyPanels(); });
 document.getElementById('filterAssigneeAgencyComplete').addEventListener('change', e=>{ agencyAssigneeFilters.complete = e.target.value; renderAgencyPanels(); });
 
