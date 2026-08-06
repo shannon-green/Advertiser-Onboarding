@@ -75,11 +75,11 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .count-badge.canceled{ background:rgba(93,100,128,0.15); color:var(--text-faint); }
 .panel-head-right{ display:flex; gap:8px; }
 .panel-body-top{ padding:14px 20px; border-bottom:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-.assignee-filter{
+.assignee-filter, .oppowner-filter{
   background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:9px 13px;
   color:var(--text); font-family:var(--body); font-size:13px; cursor:pointer;
 }
-.assignee-filter:focus{ outline:none; border-color:var(--accent); }
+.assignee-filter:focus, .oppowner-filter:focus{ outline:none; border-color:var(--accent); }
 .search{ background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:9px 13px; color:var(--text); font-family:var(--body); font-size:13px; width:100%; max-width:340px;}
 .search:focus{ outline:none; border-color:var(--accent); }
 table{ width:100%; border-collapse:collapse; font-size:13px; }
@@ -189,8 +189,10 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
 #appRoot.hide-core-channel .core-channel-col{ display:none; }
 #appRoot.hide-opp-owner .opp-owner-col{ display:none; }
 #appRoot.hide-assignee .assignee-col{ display:none; }
+#appRoot.hide-assignee .assignee-filter{ display:none; }
 #appRoot.hide-setup-status .setup-status-col{ display:none; }
 #appRoot.hide-agency-status .agency-status-col{ display:none; }
+#appRoot.hide-oppowner-filter .oppowner-filter{ display:none; }
 </style>
 </head>
 <body>
@@ -276,7 +278,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>New Onboardings</h2><span class="count-badge new" id="badgeNew">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadNew">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerNew"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableNew">
       <thead><tr><th class="sortable-th" data-tablekey="new" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="new" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th setup-status-col" data-tablekey="new" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="new" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="new" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="new" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -292,7 +294,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Pending Script Install</h2><span class="count-badge pending" id="badgePending">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadPending">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneePending"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchPending" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneePending"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerPending"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tablePending">
       <thead><tr><th class="sortable-th" data-tablekey="pending" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="pending" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th setup-status-col" data-tablekey="pending" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="pending" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="pending" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="pending" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -308,7 +310,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Script Installed</h2><span class="count-badge installed" id="badgeInstalled">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadInstalled">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"></div>
+  <div class="panel-body-top"><input class="search" id="searchInstalled" placeholder="Search by name, URL, or OHQ ID…"><select class="oppowner-filter" id="filterOppOwnerInstalled"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableInstalled">
       <thead><tr><th class="sortable-th" data-tablekey="installed" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th setup-status-col" data-tablekey="installed" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="installed" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="installed" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hitsYda">Hits (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hits7d">Hits (7d)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="hhYda">HH (YDA)<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="installed" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -324,7 +326,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Canceled</h2><span class="count-badge canceled" id="badgeCanceled">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadCanceled">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchCanceled" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeCanceled"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchCanceled" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeCanceled"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerCanceled"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableCanceled">
       <thead><tr><th class="sortable-th" data-tablekey="canceled" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="script">Script<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="canceled" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th setup-status-col" data-tablekey="canceled" data-sortkey="setupStatus">Set-Up Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="ohqId">OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channelOhqId">Channel OHQ ID<span class="sort-arrow"></span></th><th class="sortable-th core-channel-col" data-tablekey="canceled" data-sortkey="coreChannelId">Core Channel ID<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="website">Website<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="channel">Channel<span class="sort-arrow"></span></th><th class="sortable-th opp-owner-col" data-tablekey="canceled" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="canceled" data-sortkey="dateScriptInstalled">Date Script Installed<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -342,7 +344,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>New Agency</h2><span class="count-badge new" id="badgeAgencyNew">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadAgencyNew">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchAgencyNew" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyNew"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerAgencyNew"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyNew">
       <thead><tr><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="agencyNew" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th agency-status-col" data-tablekey="agencyNew" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyNew" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -357,7 +359,7 @@ footer{ margin-top:30px; display:flex; justify-content:space-between; align-item
     <div class="panel-head-left"><h2>Agency Set-Up Complete</h2><span class="count-badge installed" id="badgeAgencyComplete">0</span></div>
     <div class="panel-head-right"><button class="btn btn-sm" id="downloadAgencyComplete">↓ Download CSV</button></div>
   </div>
-  <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyComplete"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select></div>
+  <div class="panel-body-top"><input class="search" id="searchAgencyComplete" placeholder="Search by name, URL, or OHQ ID…"><select class="assignee-filter" id="filterAssigneeAgencyComplete"><option value="">All Assignees</option><option value="unassigned">Unassigned</option><option value="Genna">Genna</option><option value="Morgan">Morgan</option><option value="David">David</option><option value="Bill">Bill</option></select><select class="oppowner-filter" id="filterOppOwnerAgencyComplete"><option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option></select></div>
   <div class="table-scroll">
     <table id="tableAgencyComplete">
       <thead><tr><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="accountName">Account Name<span class="sort-arrow"></span></th><th class="sortable-th assignee-col" data-tablekey="agencyComplete" data-sortkey="assignee">Assignee<span class="sort-arrow"></span></th><th class="sortable-th agency-status-col" data-tablekey="agencyComplete" data-sortkey="status">Status<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="selfServeOrManaged">Self Serve or Managed<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="oppOwner">Opportunity Owner<span class="sort-arrow"></span></th><th class="sortable-th" data-tablekey="agencyComplete" data-sortkey="dateUploaded">Date Uploaded<span class="sort-arrow"></span></th><th></th></tr></thead>
@@ -492,6 +494,7 @@ function setupStatusFor(key){
 }
 let agencySearchTerms = { new: '', complete: '' };
 let agencyAssigneeFilters = { new: '', complete: '' };
+let agencyOppOwnerFilters = { new: '', complete: '' };
 let sortState = {
   new: { key: null, dir: 'asc' },
   pending: { key: null, dir: 'asc' },
@@ -635,6 +638,7 @@ function viewScopeForChannel(channel){
 
 let searchTerms = { new:'', pending:'', installed:'', canceled:'' };
 let assigneeFilters = { new:'', pending:'', canceled:'' };
+let oppOwnerFilters = { new:'', pending:'', installed:'', canceled:'' };
 let noteSaveTimers = {};
 let assigneeSaveTimers = {};
 let editingNoteKeys = new Set();
@@ -1187,8 +1191,29 @@ function matchesAssigneeFilter(assigneeVal, filterValue){
   return val === filterValue;
 }
 
+function matchesOppOwnerFilter(oppOwnerVal, filterValue){
+  if(!filterValue) return true; // no filter selected
+  const val = (oppOwnerVal || '').trim();
+  if(filterValue === 'unassigned') return !val;
+  return val === filterValue;
+}
+
+function getDistinctOppOwners(rows){
+  const set = new Set();
+  rows.forEach(r => { const v = (r.oppOwner || '').trim(); if(v) set.add(v); });
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+function populateOppOwnerSelect(selectEl, owners, currentValue){
+  if(!selectEl) return;
+  selectEl.innerHTML = '<option value="">All Opportunity Owners</option><option value="unassigned">Unassigned</option>'
+    + owners.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+  const validValues = ['', 'unassigned', ...owners];
+  selectEl.value = validValues.includes(currentValue) ? currentValue : '';
+}
+
 function renderSection(key, rows, hasHits){
-  const filteredUnsorted = rows.filter(r => matchesSearch(r, searchTerms[key]) && matchesAssigneeFilter(assigneesData.assignments[standardRowKey(r)], assigneeFilters[key]));
+  const filteredUnsorted = rows.filter(r => matchesSearch(r, searchTerms[key]) && matchesAssigneeFilter(assigneesData.assignments[standardRowKey(r)], assigneeFilters[key]) && matchesOppOwnerFilter(r.oppOwner, oppOwnerFilters[key]));
   const filtered = sortRows(filteredUnsorted, key, false);
   const tbody = document.querySelector(`#table${cap(key)} tbody`);
   const empty = document.getElementById(`empty${cap(key)}`);
@@ -1255,11 +1280,13 @@ function renderAgencyPanels(){
   renderAgencySection('complete', completeGroup, 'tableAgencyComplete', 'emptyAgencyComplete', 'badgeAgencyComplete', rows.length === 0);
   window._agencyBuckets = { new: newGroup, complete: completeGroup };
   updateSortArrows();
+  populateOppOwnerSelect(document.getElementById('filterOppOwnerAgencyNew'), getDistinctOppOwners(newGroup), agencyOppOwnerFilters.new);
+  populateOppOwnerSelect(document.getElementById('filterOppOwnerAgencyComplete'), getDistinctOppOwners(completeGroup), agencyOppOwnerFilters.complete);
 }
 
 function renderAgencySection(searchKey, rows, tableId, emptyId, badgeId, noDataYet){
   const term = agencySearchTerms[searchKey] || '';
-  const filteredUnsorted = rows.filter(r => matchesSearch(r, term) && matchesAssigneeFilter(assigneesData.assignments[identityKeyFor(r)], agencyAssigneeFilters[searchKey]));
+  const filteredUnsorted = rows.filter(r => matchesSearch(r, term) && matchesAssigneeFilter(assigneesData.assignments[identityKeyFor(r)], agencyAssigneeFilters[searchKey]) && matchesOppOwnerFilter(r.oppOwner, agencyOppOwnerFilters[searchKey]));
   const filtered = sortRows(filteredUnsorted, 'agency' + cap(searchKey), true);
   const tbody = document.querySelector(`#${tableId} tbody`);
   const empty = document.getElementById(emptyId);
@@ -1400,6 +1427,10 @@ function render(){
     renderSection('canceled', b.canceled, false);
     if(currentViewScope === 'NEW_AGENCY' || currentViewScope === 'MASTER'){ renderAgencyPanels(); }
     updateSortArrows();
+    populateOppOwnerSelect(document.getElementById('filterOppOwnerNew'), getDistinctOppOwners(b.new), oppOwnerFilters.new);
+    populateOppOwnerSelect(document.getElementById('filterOppOwnerPending'), getDistinctOppOwners(b.pending), oppOwnerFilters.pending);
+    populateOppOwnerSelect(document.getElementById('filterOppOwnerInstalled'), getDistinctOppOwners(b.installed), oppOwnerFilters.installed);
+    populateOppOwnerSelect(document.getElementById('filterOppOwnerCanceled'), getDistinctOppOwners(b.canceled), oppOwnerFilters.canceled);
   }
 
   const mostRecent = [lastOnboardUploadedAt, lastActiveUploadedAt, lastAgencyUploadedAt].filter(Boolean).sort().pop();
@@ -1421,6 +1452,13 @@ document.getElementById('filterAssigneePending').addEventListener('change', e=>{
 document.getElementById('filterAssigneeCanceled').addEventListener('change', e=>{ assigneeFilters.canceled = e.target.value; render(); });
 document.getElementById('filterAssigneeAgencyNew').addEventListener('change', e=>{ agencyAssigneeFilters.new = e.target.value; renderAgencyPanels(); });
 document.getElementById('filterAssigneeAgencyComplete').addEventListener('change', e=>{ agencyAssigneeFilters.complete = e.target.value; renderAgencyPanels(); });
+
+document.getElementById('filterOppOwnerNew').addEventListener('change', e=>{ oppOwnerFilters.new = e.target.value; render(); });
+document.getElementById('filterOppOwnerPending').addEventListener('change', e=>{ oppOwnerFilters.pending = e.target.value; render(); });
+document.getElementById('filterOppOwnerInstalled').addEventListener('change', e=>{ oppOwnerFilters.installed = e.target.value; render(); });
+document.getElementById('filterOppOwnerCanceled').addEventListener('change', e=>{ oppOwnerFilters.canceled = e.target.value; render(); });
+document.getElementById('filterOppOwnerAgencyNew').addEventListener('change', e=>{ agencyOppOwnerFilters.new = e.target.value; renderAgencyPanels(); });
+document.getElementById('filterOppOwnerAgencyComplete').addEventListener('change', e=>{ agencyOppOwnerFilters.complete = e.target.value; renderAgencyPanels(); });
 
 // ---------- CSV download ----------
 function downloadCsv(rows, filename, hasHits, includeAssignee){
@@ -1575,6 +1613,11 @@ function updateMasterOnlyColumnsVisibility(scope){
   appRoot.classList.toggle('hide-agency-status', !isMaster);
 }
 
+function updateOppOwnerFilterVisibility(scope){
+  const shouldShow = scope === 'NEW_AGENCY' || scope === 'IHEART' || scope === 'FT_DIRECT';
+  appRoot.classList.toggle('hide-oppowner-filter', !shouldShow);
+}
+
 function updatePipelineVisibility(scope){
   const isAgencyOnlyView = scope === 'NEW_AGENCY';
   const showAgencyPanels = scope === 'NEW_AGENCY' || scope === 'MASTER';
@@ -1594,6 +1637,7 @@ function unlockSite(scope){
   updateCoreChannelVisibility(scope);
   updateOppOwnerVisibility(scope);
   updateMasterOnlyColumnsVisibility(scope);
+  updateOppOwnerFilterVisibility(scope);
   updatePipelineVisibility(scope);
   try{ sessionStorage.setItem('stream_onboarding_view', scope); }catch(e){}
   render();
